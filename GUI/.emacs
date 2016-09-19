@@ -31,8 +31,6 @@
  '(elscreen-display-screen-number nil)
  '(visible-cursor t))
 
-
-
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -44,6 +42,8 @@
  '(highlight                        ((t (:background "midnight blue" :foreground nil       :bold t      )))))
 
 (load-theme 'clues)
+
+(global-set-key (kbd "C-x g") 'magit-status)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Requires ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; ido ;;;;
