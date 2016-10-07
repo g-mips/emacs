@@ -1,5 +1,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; THIS SECTION SHOULD ALWAYS BE FIRST ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(package-initialize)
+(when (>= emacs-major-version 24)
+  (require 'package)
+  (setq package-archives
+	'(("gnu" . "http://elpa.gnu.org/packages/")
+	  ("melpa" . "http://melpa.org/packages/")
+	  ("marmalade" . "http://marmalade-repo.org/packages/")))
+  (package-initialize))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -13,22 +19,21 @@
    (quote
     ("90e4b4a339776e635a78d398118cb782c87810cb384f1d1223da82b612338046" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" "a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
  '(display-time-mode t)
+ '(elscreen-display-screen-number nil)
  '(global-hl-line-mode 1)
  '(global-linum-mode t)
  '(inhibit-startup-screen t)
  '(menu-bar-mode nil)
  '(mouse-wheel-progressive-speed nil)
  '(mouse-wheel-scroll-amount (quote (1)))
- '(package-archives
+ '(package-selected-packages
    (quote
-    (("gnu" . "http://elpa.gnu.org/packages/")
-     ("melpa" . "http://melpa.org/packages/"))))
+    (magit js3-mode elscreen yasnippet sml-mode smart-mode-line-powerline-theme clues-theme auto-complete)))
  '(scroll-bar-mode nil)
  '(scroll-conservatively 101)
  '(tool-bar-mode nil)
  '(undo-limit 20000000)
  '(undo-strong-limit 40000000)
- '(elscreen-display-screen-number nil)
  '(visible-cursor t))
 
 (custom-set-faces
@@ -36,10 +41,10 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(elscreen-tab-current-screen-face ((t (:background "#110B14"       :foreground "#C0E9F6"              ))))
- '(elscreen-tab-control-face        ((t (:background "#110B14"       :foreground "#C0E9F6"              ))))
- '(elscreen-tab-other-screen-face   ((t (                            :foreground "#90A0A0" :slant italic))))
- '(highlight                        ((t (:background "midnight blue" :foreground nil       :bold t      )))))
+ '(elscreen-tab-control-face ((t (:background "#110B14" :foreground "#C0E9F6"))))
+ '(elscreen-tab-current-screen-face ((t (:background "#110B14" :foreground "#C0E9F6"))))
+ '(elscreen-tab-other-screen-face ((t (:foreground "#90A0A0" :slant italic))))
+ '(highlight ((t (:background "midnight blue" :foreground nil :bold t)))))
 
 (load-theme 'clues)
 
@@ -236,3 +241,4 @@
 ;;      "-i C:\\Program Files\\Anaconda3\\Scripts\\ipython-script.py")
 
 
+(setenv "GIT_ASKPASS" "git-gui--askpass")
