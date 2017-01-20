@@ -5,6 +5,7 @@
   (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/") t)
   (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/") t)
   (package-initialize)
+  (package-refresh-contents)
   )
 
 ;;;;;;;;;;;;;;;;;;;;;; Emacs Server ;;;;;;;;;;;;;;;;;;;;;;
@@ -23,7 +24,7 @@
  '(column-number-mode t)
  '(custom-safe-themes
    (quote
-    ("c4d3da0593914fff8fd2fbea89452f1a767893c578b219e352c763680d278762" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "a8245b7cc985a0610d71f9852e9f2767ad1b852c2bdea6f4aadc12cce9c4d6d0" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "90e4b4a339776e635a78d398118cb782c87810cb384f1d1223da82b612338046" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" "a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
+    ("a632c5ce9bd5bcdbb7e22bf278d802711074413fd5f681f39f21d340064ff292" "c4d3da0593914fff8fd2fbea89452f1a767893c578b219e352c763680d278762" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "a8245b7cc985a0610d71f9852e9f2767ad1b852c2bdea6f4aadc12cce9c4d6d0" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "90e4b4a339776e635a78d398118cb782c87810cb384f1d1223da82b612338046" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" "a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
  '(display-time-mode t)
  '(global-hl-line-mode 1)
  '(global-linum-mode t)
@@ -51,7 +52,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "#151718" :foreground "#D4D7D6" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 95 :width normal :foundry "outline" :family "Courier New"))))
+ '(default ((t (:inherit nil :stipple nil :background "#151718" :foreground "#D4D7D6" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 98 :width normal :foundry "PfEd" :family "DejaVu Sans Mono"))))
  '(cursor ((t (:background "orange"))))
  '(highlight ((t (:background "midnight blue" :foreground nil :bold t)))))
 
@@ -89,6 +90,8 @@
 ;;;;;;;;;;;;;;;;;;;;;; Packages Setup ;;;;;;;;;;;;;;;;;;;;;;
 (global-set-key (kbd "<f5>") 'revert-buffer)
 ;;(global-set-key (kbd "TAB") 'tab-to-tab-stop)
+(global-set-key (kbd "C-x M-d") 'make-directory)
+(global-set-key (kbd "C-x M-f") 'delete-directory)
 
 (setq gdb-many-windows t)
 (setq gdb-show-main t)
@@ -168,12 +171,21 @@
 (setq speedbar-show-unknown-files 1)
 (global-set-key (kbd "C-c TAB") 'sr-speedbar-toggle)
 
+;;;; undo-tree ;;;;
+(if (not (package-installed-p 'undo-tree))
+    (package-install 'undo-tree))
+(global-undo-tree-mode 1)
+
 ;;;; flyspell ;;;;
 (if (string= "windows-nt" system-type)
     (custom-set-variables
      '(ispell-dictionary "american")
      '(ispell-program-name "C:\\Program Files (x86)\\Aspell\\bin\\aspell.exe"))
-    )
+  )
+(if (string= "gnu/linx" system-type)
+    (custom-set-variables
+     '(ispell-program-name "/usr/bin/aspell"))
+  )
 
 (defun add-flyspell ()
   (flyspell-mode)
@@ -237,6 +249,9 @@
     (package-install 'magit))
 (global-set-key (kbd "C-x g") 'magit-status)
 
+;;;; c ;;;;
+(setq c-default-style "linux" c-basic-offset 4)
+
 ;;;; elscreen ;;;;
 ;;(if (not (package-installed-p 'elscreen))
 ;;    (package-install 'elscreen))
@@ -277,6 +292,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;; Session Saving ;;;;;;;;;;;;;;;;;;;;;;
 (setq desktop-load-locked-desktop t)
+(setq desktop-restore-frames nil)
 
 (defvar emacs-configuration-directory
     "~/.emacs.d/"
