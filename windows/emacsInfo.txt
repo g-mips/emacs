@@ -1,0 +1,11 @@
+INSTRUCTIONS
+1. Install Emacs into "Program Files" folder. DO NOT install into "Program Files (x86)" folder, as all the setup deals with 64-bit folder.
+2. Create a shortcut of "runemacs.exe" into startup folder. Change target to: "C:\Program Files\Emacs\bin\runemacs.exe" --daemon
+3. Create a shortcut of "emacsclientw.exe" into a folder that is on PATH (for me that is my %USERPROFILE%\Bin folder).
+   Change target to: "C:\Program Files\Emacs\bin\emacsclientw.exe" -na "" "" OR "C:\Program Files\Emacs\bin\emacsclientw.exe" -na "" -c ""
+   Set shortcut key to "Ctrl-Alt-E".
+4. Create a shortcut of "emacsclientw.exe" into the start menu folder.
+   Change target to: "C:\Program Files\Emacs\bin\emacsclientw.exe" -na "" "" OR "C:\Program Files\Emacs\bin\emacsclientw.exe" -na "" -c ""
+   Set shortcut key to "Ctrl-Alt-E".
+5. Create an environmental variable called HOME for a particular user. Set it to %USERPROFILE%
+6. Place ".emacs" file into %USERPROFILE%
