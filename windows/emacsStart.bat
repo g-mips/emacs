@@ -1,4 +1,7 @@
 @echo off
+
+git remote update
+
 for /f %%i in ('git rev-parse @{u}') do set UPSTREAM=%%i
 for /f %%i in ('git rev-parse @') do set LOCAL=%%i
 for /f %%i in ('git rev-parse %UPSTREAM%') do set REMOTE=%%i
@@ -9,7 +12,8 @@ if %LOCAL%==%REMOTE% (
     goto EOF
     )
 if %LOCAL%==%BASE% (
-    echo "Need to pull"
+    echo "Pulling..."
+    git pull
     goto EOF
     )
 if %REMOTE%==%BASE% (
