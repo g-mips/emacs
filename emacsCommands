@@ -1,0 +1,87 @@
+C-g - Quit any command
+
+Characters 
+C-f - Forward one character
+C-b - Backward one character
+C-d - delete character from the right
+DEL - delete character from the lef
+
+Words
+M-d	    - delete word from the right
+M-DEL/C-DEL - delete word from the left
+M-t         - transpose swap the word to the right of the cursor with the word to the left of the cursor
+M-f    	    - Move forward over a word
+M-b   	    - Move backward over a word
+M-@   	    - Mark until the end of the next word
+
+Sentences (A sentence ends with '.', '?', or '!' followed by the end of a line or two spaces OR end of a paragraph)
+M-a     - Beginning of sentence
+M-e     - End of sentence
+C-x DEL - Delete until beginning of sentence
+
+Lines
+C-a - Beginning of line
+C-e - End of line
+C-n - Next line
+C-p - Previous line
+C-k - Kill line
+
+Paragraphs
+M-{ - Beginning of paragraph
+M-} - End of paragraph
+M-h - Mark this or next paragraph
+
+Pages
+M-x what-page - Display page number of point and line number in page
+C-x [ - Move point to previous page boundary
+C-x ] - Move point to next page boundary
+C-x l - Count the lines in this page
+
+Inserting Text
+C-q - Insert non-graphic characters. Also insert characters specified by octal character codes.
+C-x 8 RET - Insert Unicode characters
+
+Point
+M-r	- Move point to the left margin to center, then top-most, then bottom-most line
+M-<     - Top of buffer
+M->     - Bottom of buffer
+C-v   	- Page down
+M-v     - Page up
+M-g M-g/M-g g - Go to line
+M-g c   - Go to position n
+M-g TAB - Go to column n in current line
+C-x C-n - ******Read about this command later*******
+
+Undo
+C-/ or C-_ or C-x u - Undo/Redo
+C-? - Redo (IF USING undo-tree)
+
+Zoom
+C-x = Zoom in
+C-x - Zoom out
+
+Files
+C-x C-f - Visit a file
+C-x C-r - Visit a file in read only mode
+C-x C-v - Visit a different file instead of the one visited last
+C-x 4 f - Visit a file in a new window
+C-x 5 f - Visit a file in a new frame
+
+Saving:
+C-x C-s - Save current buffer
+C-x s   - Save all buffers
+M-~     - Current buffer forgets that it has changed
+C-x C-w - Save current buffer with different name
+M-x set-visited-file-name - Change the file name under which the current buffer will be saved.
+******LEARN ABOUT SHADOWING FILES******
+
+Revert
+M-x revert-buffer (<f5>) - Revert changes and go back to the saved version of the file (reload).
+
+Directories
+C-x C-d     - Show a brief look at directories
+C-u C-x C-d - Show a verbose look at directories
+C-x M-d     - Make Directory
+C-x M-c     - Delete Directory
+
+
