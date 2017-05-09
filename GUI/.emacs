@@ -2,14 +2,12 @@
 (when (>= emacs-major-version 24)
   (require 'package)
   (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t)
-  (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/") t)
-  (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/") t)
+  (add-to-list 'package-archives '("marmalade" . "http://stable.melpa.org/packages/") t)
   (package-initialize)
   (package-refresh-contents)
   )
 
 ;;;;;;;;;;;;;;;;;;;;;; Emacs Server ;;;;;;;;;;;;;;;;;;;;;;
-(server-start)
 (desktop-save-mode 1)
 (setq initial-scratch-message nil)
 
@@ -27,10 +25,9 @@
     ("a632c5ce9bd5bcdbb7e22bf278d802711074413fd5f681f39f21d340064ff292" "c4d3da0593914fff8fd2fbea89452f1a767893c578b219e352c763680d278762" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "a8245b7cc985a0610d71f9852e9f2767ad1b852c2bdea6f4aadc12cce9c4d6d0" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "90e4b4a339776e635a78d398118cb782c87810cb384f1d1223da82b612338046" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" "a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
  '(display-time-mode t)
  '(global-hl-line-mode 1)
- '(global-linum-mode t)
  '(inhibit-startup-screen t)
  '(ispell-dictionary "american")
- '(ispell-program-name "C:\\Program Files (x86)\\Aspell\\bin\\aspell.exe")
+ '(ispell-program-name "aspell")
  '(linum-format " %6d ")
  '(menu-bar-mode nil)
  '(mouse-wheel-progressive-speed nil)
@@ -54,20 +51,7 @@
  ;; If there is more than one, they won't work right.
  '(default ((t (:inherit nil :stipple nil :background "#151718" :foreground "#D4D7D6" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 98 :width normal :foundry "PfEd" :family "DejaVu Sans Mono"))))
  '(cursor ((t (:background "orange"))))
- '(highlight ((t (:background "midnight blue" :foreground nil :bold t)))))
-
-;;;;;;;;;;;;;;;;;;;;;; Theme ;;;;;;;;;;;;;;;;;;;;;;
-;;(if (not (package-installed-p 'alect-themes))
-;;    (package-install 'alect-themes))
-;;(load-theme 'alect-black t)
-
-(if (not (package-installed-p 'seti-theme))
-    (package-install 'seti-theme))
-(load-theme 'seti)
-
-;;(if (not (package-installed-p 'solarized-theme))
-;;    (package-install 'solarized-theme))
-;;(load-theme 'solarized-dark)
+ '(highlight ((t (:background "firebrick4" :foreground nil :bold t)))))
 
 (setq fixme-modes '(c++-mode c-mode emacs-lisp-mode python-mode lua-mode))
 (make-face 'font-lock-fixme-face)
@@ -89,17 +73,33 @@
 
 ;;;;;;;;;;;;;;;;;;;;;; Packages Setup ;;;;;;;;;;;;;;;;;;;;;;
 (global-set-key (kbd "<f5>") 'revert-buffer)
-;;(global-set-key (kbd "TAB") 'tab-to-tab-stop)
 (global-set-key (kbd "C-x M-d") 'make-directory)
 (global-set-key (kbd "C-x M-f") 'delete-directory)
 
 (setq gdb-many-windows t)
 (setq gdb-show-main t)
 
+;;;; whitespace ;;;;
+(require 'whitespace)
+
+(setq-default indent-tabs-mode nil)
+
+;;;; fill-column-indicator ;;;;
+(if (not (package-installed-p 'fill-column-indicator))
+    (package-install 'fill-column-indicator))
+(require 'fill-column-indicator)
+(setq fci-rule-column 80)
+(setq fci-rule-color "green")
+(setq fci-rule-use-dashes 1)
+(setq fci-rule-width 50)
+
 ;;;; switch-window ;;;;
 (if (not (package-installed-p 'switch-window))
     (package-install 'switch-window))
 (global-set-key (kbd "C-x o") 'switch-window)
+
+;;;; docview ;;;;
+(setq doc-view-continuous 1)
 
 ;;;; cycbuf ;;;;
 (if (not (package-installed-p 'cycbuf))
@@ -124,6 +124,9 @@
 (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
 (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB work in terminal
 (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
+
+(if (not (package-installed-p 'helm-gtags))
+    (package-install 'helm-gtags))
 
 (when (executable-find "curl")
   (setq helm-google-suggest-use-curl-p t))
@@ -172,9 +175,9 @@
 (global-set-key (kbd "C-c TAB") 'sr-speedbar-toggle)
 
 ;;;; undo-tree ;;;;
-(if (not (package-installed-p 'undo-tree))
-    (package-install 'undo-tree))
-(global-undo-tree-mode 1)
+;;(if (not (package-installed-p 'undo-tree))
+;;    (package-install 'undo-tree))
+;;(global-undo-tree-mode 1)
 
 ;;;; flyspell ;;;;
 (if (string= "windows-nt" system-type)
@@ -210,6 +213,61 @@
 (sml/setup)
 (setq powerline-default-separator 'wave)
 
+;;;; company ;;;;
+(if (not (package-installed-p 'company))
+    (package-install 'company))
+
+;;;; rtags ;;;;
+;;(if (not (package-installed-p 'rtags))
+;;    (package-install 'rtags))
+
+;;;; linum ;;;;
+(defun goto-line-with-feedback ()
+  "Show line numbers temporarily, while prompting for the line number input"
+  (interactive)
+  (unwind-protect
+      (progn
+        (linum-mode 1)
+        (goto-line (read-number "Goto line: ")))
+    (linum-mode -1)))
+(global-set-key [remap goto-line] 'goto-line-with-feedback)
+
+;; Ensure that we use only rtags checking
+;; https://github.com/Andersbakken/rtags#optional-1
+;;(defun setup-flycheck-rtags ()
+;;  (interactive)
+;;  (flycheck-select-checker 'rtags)
+  ;; RTags creates more accurate overlays.
+;;  (setq-local flycheck-highlighting-mode nil)
+;;  (setq-local flycheck-check-syntax-automatically nil))
+
+;; only run this if rtags is installed
+;;(when (require 'rtags nil :noerror)
+  ;; make sure you have company-mode installed
+;;  (require 'company)
+;;  (define-key c-mode-base-map (kbd "M-.")
+;;    (function rtags-find-symbol-at-point))
+;;  (define-key c-mode-base-map (kbd "M-,")
+;;    (function rtags-find-references-at-point))
+  ;; disable prelude's use of C-c r, as this is the rtags keyboard prefix
+;;  (define-key prelude-mode-map (kbd "C-c r") nil)
+  ;; install standard rtags keybindings. Do M-. on the symbol below to
+  ;; jump to definition and see the keybindings.
+;;  (rtags-enable-standard-keybindings)
+  ;; comment this out if you don't have or don't use helm
+;;  (setq rtags-use-helm t)
+  ;; company completion setup
+;;  (setq rtags-autostart-diagnostics t)
+;;  (rtags-diagnostics)
+;;  (setq rtags-completions-enabled t)
+;;  (push 'company-rtags company-backends)
+;;  (global-company-mode)
+;;  (define-key c-mode-base-map (kbd "<C-tab>") (function company-complete))
+  ;; use rtags flycheck mode -- clang warnings shown inline
+;;  (require 'flycheck-rtags)
+  ;; c-mode-common-hook is also called by c++-mode
+;;  (add-hook 'c-mode-common-hook #'setup-flycheck-rtags))
+
 ;;;; auto-complete ;;;;
 (if (not (package-installed-p 'auto-complete))
     (package-install 'auto-complete))	  
@@ -229,25 +287,6 @@
   )
 (add-hook 'c++-mode-hook 'start-ac-c-headers)
 (add-hook 'c-mode-hook 'start-ac-c-headers)
-
-(semantic-mode 1)
-(defun start-ac-semantic() 
-  (add-to-list 'ac-sources 'ac-source-semantic)
-)
-(add-hook 'c-mode-common-hook 'start-ac-semantic)
-(setq helm-semantic-fuzzy-match t
-      helm-imenu-fuzzy-match    t)
-
-;;;; yasnippet ;;;;
-(if (not (package-installed-p 'yasnippet))
-    (package-install 'yasnippet))
-(require 'yasnippet)
-(yas-global-mode 1)
-
-;;;; magit ;;;;
-(if (not (package-installed-p 'magit))
-    (package-install 'magit))
-(global-set-key (kbd "C-x g") 'magit-status)
 
 ;;;; c ;;;;
 (setq c-default-style "linux" c-basic-offset 4)
