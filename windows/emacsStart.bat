@@ -1,5 +1,7 @@
 @echo off
 
+push "C:\Users\grant\Documents\emacs\"
+
 git remote update
 
 for /f %%i in ('git rev-parse @{u}') do set UPSTREAM=%%i
@@ -24,3 +26,4 @@ if %REMOTE%==%BASE% (
 echo "Diverged"
 
 :EOF
+pop
