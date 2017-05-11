@@ -1,6 +1,7 @@
 ;;;;;;;;;;;;;;;;;;;;;; Package Handling ;;;;;;;;;;;;;;;;;;;;;;
 (when (>= emacs-major-version 24)
   (require 'package)
+  ;; ELPA is automatically added.
   (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t)
   (add-to-list 'package-archives '("marmalade" . "http://stable.melpa.org/packages/") t)
   (package-initialize)
@@ -8,8 +9,28 @@
   )
 
 ;;;;;;;;;;;;;;;;;;;;;; Emacs Server ;;;;;;;;;;;;;;;;;;;;;;
+;; The emacs server should be started on startup. (i.e. emacs --daemon)
 (desktop-save-mode 1)
+(defun save-desktop ()
+  (desktop-save)
+  )
+(add-hook 'server-done-hook 'save-desktop)
 (setq initial-scratch-message nil)
+(setq frame-title-format (list "%b - " (getenv "USERNAME") "@" (getenv "USERDOMAIN")))
+
+(defun new-empty-buffer ()
+  "Create a new empty buffer.
+   New buffer will be named “untitled” or “untitled<2>”, “untitled<3>”, etc."
+  (interactive)
+  (let ((buffer (generate-new-buffer "untitled")))
+    (set-buffer-major-mode buffer)
+    (switch-to-buffer buffer)
+    (setq buffer-offer-save t)))
+(global-set-key (kbd "<f7>") 'new-empty-buffer)
+
+(if (string= "windows-nt" system-type)
+    (add-to-list 'exec-path "C:/Program Files (x86)/Aspell/bin")
+  )
 
 ;;;;;;;;;;;;;;;;;;;;;; Custom Variables ;;;;;;;;;;;;;;;;;;;;;;
 (custom-set-variables
@@ -20,6 +41,7 @@
  '(blink-cursor-alist nil)
  '(blink-cursor-mode nil)
  '(column-number-mode t)
+ '(confirm-kill-emacs (quote y-or-n-p))
  '(custom-safe-themes
    (quote
     ("a632c5ce9bd5bcdbb7e22bf278d802711074413fd5f681f39f21d340064ff292" "c4d3da0593914fff8fd2fbea89452f1a767893c578b219e352c763680d278762" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "a8245b7cc985a0610d71f9852e9f2767ad1b852c2bdea6f4aadc12cce9c4d6d0" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "90e4b4a339776e635a78d398118cb782c87810cb384f1d1223da82b612338046" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" "a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
@@ -34,9 +56,11 @@
  '(mouse-wheel-scroll-amount (quote (1)))
  '(package-selected-packages
    (quote
-    (switch-window cycbuf seti-theme solarized-theme auto-complete-c-headers nlinum tabbar nav lua-mode magit yasnippet auto-complete smart-mode-line-powerline-theme smart-mode-line)))
+    (company switch-window cycbuf seti-theme solarized-theme auto-complete-c-headers nlinum tabbar nav lua-mode magit yasnippet auto-complete smart-mode-line-powerline-theme smart-mode-line)))
  '(scroll-bar-mode nil)
  '(scroll-conservatively 101)
+ '(show-trailing-whitespace t)
+ '(tab-width 4)
  '(tool-bar-mode nil)
  '(undo-limit 20000000)
  '(undo-strong-limit 40000000)
@@ -49,7 +73,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "#151718" :foreground "#D4D7D6" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 98 :width normal :foundry "PfEd" :family "DejaVu Sans Mono"))))
+ '(default ((t (:inherit nil :stipple nil :background "#151718" :foreground "#D4D7D6" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 96 :width normal :foundry "outline" :family "Liberation Mono"))))
  '(cursor ((t (:background "orange"))))
  '(highlight ((t (:background "firebrick4" :foreground nil :bold t)))))
 
@@ -73,6 +97,10 @@
 
 ;;;;;;;;;;;;;;;;;;;;;; Packages Setup ;;;;;;;;;;;;;;;;;;;;;;
 (global-set-key (kbd "<f5>") 'revert-buffer)
+(defun reload-dotemacs ()
+  (interactive)
+  (load-file "~/.emacs"))
+(global-set-key (kbd "M-<f5>") 'reload-dotemacs)
 (global-set-key (kbd "C-x M-d") 'make-directory)
 (global-set-key (kbd "C-x M-f") 'delete-directory)
 
@@ -97,6 +125,11 @@
 (if (not (package-installed-p 'switch-window))
     (package-install 'switch-window))
 (global-set-key (kbd "C-x o") 'switch-window)
+
+;;;; undo-tree ;;;;
+(if (not (package-installed-p 'undo-tree))
+    (package-install 'undo-tree))
+(global-undo-tree-mode)
 
 ;;;; docview ;;;;
 (setq doc-view-continuous 1)
@@ -151,7 +184,6 @@
                      `(:background ,bg-color :foreground ,bg-color)))
       (setq-local cursor-type nil))))
 
-
 (add-hook 'helm-minibuffer-set-up-hook
           'spacemacs//helm-hide-minibuffer-maybe)
 
@@ -174,22 +206,7 @@
 (setq speedbar-show-unknown-files 1)
 (global-set-key (kbd "C-c TAB") 'sr-speedbar-toggle)
 
-;;;; undo-tree ;;;;
-;;(if (not (package-installed-p 'undo-tree))
-;;    (package-install 'undo-tree))
-;;(global-undo-tree-mode 1)
-
 ;;;; flyspell ;;;;
-(if (string= "windows-nt" system-type)
-    (custom-set-variables
-     '(ispell-dictionary "american")
-     '(ispell-program-name "C:\\Program Files (x86)\\Aspell\\bin\\aspell.exe"))
-  )
-(if (string= "gnu/linx" system-type)
-    (custom-set-variables
-     '(ispell-program-name "/usr/bin/aspell"))
-  )
-
 (defun add-flyspell ()
   (flyspell-mode)
   )
@@ -217,10 +234,6 @@
 (if (not (package-installed-p 'company))
     (package-install 'company))
 
-;;;; rtags ;;;;
-;;(if (not (package-installed-p 'rtags))
-;;    (package-install 'rtags))
-
 ;;;; linum ;;;;
 (defun goto-line-with-feedback ()
   "Show line numbers temporarily, while prompting for the line number input"
@@ -232,45 +245,9 @@
     (linum-mode -1)))
 (global-set-key [remap goto-line] 'goto-line-with-feedback)
 
-;; Ensure that we use only rtags checking
-;; https://github.com/Andersbakken/rtags#optional-1
-;;(defun setup-flycheck-rtags ()
-;;  (interactive)
-;;  (flycheck-select-checker 'rtags)
-  ;; RTags creates more accurate overlays.
-;;  (setq-local flycheck-highlighting-mode nil)
-;;  (setq-local flycheck-check-syntax-automatically nil))
-
-;; only run this if rtags is installed
-;;(when (require 'rtags nil :noerror)
-  ;; make sure you have company-mode installed
-;;  (require 'company)
-;;  (define-key c-mode-base-map (kbd "M-.")
-;;    (function rtags-find-symbol-at-point))
-;;  (define-key c-mode-base-map (kbd "M-,")
-;;    (function rtags-find-references-at-point))
-  ;; disable prelude's use of C-c r, as this is the rtags keyboard prefix
-;;  (define-key prelude-mode-map (kbd "C-c r") nil)
-  ;; install standard rtags keybindings. Do M-. on the symbol below to
-  ;; jump to definition and see the keybindings.
-;;  (rtags-enable-standard-keybindings)
-  ;; comment this out if you don't have or don't use helm
-;;  (setq rtags-use-helm t)
-  ;; company completion setup
-;;  (setq rtags-autostart-diagnostics t)
-;;  (rtags-diagnostics)
-;;  (setq rtags-completions-enabled t)
-;;  (push 'company-rtags company-backends)
-;;  (global-company-mode)
-;;  (define-key c-mode-base-map (kbd "<C-tab>") (function company-complete))
-  ;; use rtags flycheck mode -- clang warnings shown inline
-;;  (require 'flycheck-rtags)
-  ;; c-mode-common-hook is also called by c++-mode
-;;  (add-hook 'c-mode-common-hook #'setup-flycheck-rtags))
-
 ;;;; auto-complete ;;;;
 (if (not (package-installed-p 'auto-complete))
-    (package-install 'auto-complete))	  
+    (package-install 'auto-complete))
 (require 'auto-complete)
 (require 'auto-complete-config)
 (ac-config-default)
@@ -282,31 +259,12 @@
 (defun start-ac-c-headers ()
   (require 'auto-complete-c-headers)
   (add-to-list 'ac-sources 'ac-source-c-headers)
-  (if (string= "windows-nt" system-type)
-      (add-to-list 'achead:include-directories '"c:\\users\\grant\\mingw\\include"))
   )
 (add-hook 'c++-mode-hook 'start-ac-c-headers)
 (add-hook 'c-mode-hook 'start-ac-c-headers)
 
 ;;;; c ;;;;
 (setq c-default-style "linux" c-basic-offset 4)
-
-;;;; elscreen ;;;;
-;;(if (not (package-installed-p 'elscreen))
-;;    (package-install 'elscreen))
-;;(elscreen-start)
-
-;;;;;;;;;;;;;;;;;;;;;; New File Handle ;;;;;;;;;;;;;;;;;;;;;;
-;;(add-hook 'find-file-hook 'open-file-in-new-tab)
-;;(defun open-file-in-new-tab ()
-;;  (when last-command
-;;    (setq keep-old (y-or-n-p "Do you want to keep old buffer? "))
-;;    (when keep-old
-;;      (setq file-to-visit (format buffer-file-name))
-;;      (ido-find-file file-to-visit)
-;;      )
-;;    )
-;;  )
 
 ;;;;;;;;;;;;;;;;;;;;;; Full-Screen Mode ;;;;;;;;;;;;;;;;;;;;;;
 (add-hook 'window-setup-hook 'toggle-frame-fullscreen t)
@@ -336,39 +294,6 @@
 (defvar emacs-configuration-directory
     "~/.emacs.d/"
     "The directory where the emacs configuration files are stored.")
-
-;; (defvar elscreen-tab-configuration-store-filename
-;;     (concat emacs-configuration-directory ".elscreen")
-;;     "The file where the elscreen tab configuration is stored.")
-
-;; (defun elscreen-store ()
-;;     "Store the elscreen tab configuration."
-;;     (interactive)
-;;     (if (desktop-save emacs-configuration-directory)
-;;         (with-temp-file elscreen-tab-configuration-store-filename
-;; 	  (insert (prin1-to-string (elscreen-get-screen-to-name-alist))))))
-;; (add-hook 'kill-emacs-hook 'elscreen-store)
-
-;; (defun elscreen-restore ()
-;;     "Restore the elscreen tab configuration."
-;;     (interactive)
-;;     (if (desktop-read)
-;;         (let ((screens (reverse
-;;                         (read
-;;                          (with-temp-buffer
-;;                           (insert-file-contents elscreen-tab-configuration-store-filename)
-;;                           (buffer-string))))))
-;;             (while screens
-;;                 (setq screen (car (car screens)))
-;;                 (setq buffers (split-string (cdr (car screens)) ":"))
-;;                 (if (eq screen 0)
-;;                     (switch-to-buffer (car buffers))
-;;                     (elscreen-find-and-goto-by-buffer (car buffers) t t))
-;;                 (while (cdr buffers)
-;;                     (switch-to-buffer-other-window (car (cdr buffers)))
-;;                     (setq buffers (cdr buffers)))
-;;                 (setq screens (cdr screens))))))
-;; (elscreen-restore)
 
 ;;(require 'compile)
 ;;(require 'cc-mode)
@@ -495,4 +420,5 @@
 ;;  "Maximize the current frame"
 ;;  (interactive)
 ;;  (w32-send-sys-command 61488))
+
 
